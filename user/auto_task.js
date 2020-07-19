@@ -760,7 +760,7 @@ function cheat_visitor(num)
         let check_status = is_customer()
         if(check_status)
         {
-            let data = {"nickname":id("name").findOne().getText(),"gender":check_status,"belong_key":belong_key}
+            let data = {"nickname":id("username").findOne().getText(),"gender":check_status,"belong_key":belong_key}
             updateInfo(data)
             log("正在绕过风控中")
             sleep(random(4000,5500))

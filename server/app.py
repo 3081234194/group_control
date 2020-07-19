@@ -4,7 +4,7 @@ import json
 import hashlib
 from flask import Flask,request
 import pymysql
-conn = pymysql.connect(host='127.0.0.1', port=3306, user='root', passwd='q2251682', db='bixin', charset='utf8')
+conn = pymysql.connect(host='127.0.0.1', port=3306, user='root', passwd='q2251682', db='bixin', charset='utf8mb4')
 app = Flask(__name__)
 @app.route("/uploadInfo", methods=["POST"])
 def receiveInfo():
@@ -24,7 +24,7 @@ def receiveInfo():
 #对sign进行检验
 def checkSign(data,sign):
     md5_data = md5(data)
-    local_sign = algorithmSign(md5_data)az406496b6bz40a0d0z4a7a66z096529
+    local_sign = algorithmSign(md5_data)
     if local_sign==sign:
         return 0
     else:
@@ -66,10 +66,24 @@ def insertData(data):
         cursor.close()
     print("插入成功")
     return 0
+#生成md5
 @app.route("/getMd5", methods=["POST"])
 def getMD5():
      if request.method == 'POST':
         receive_data = request.get_data()
         receive_json = json.loads(receive_data)
         return md5(receive_json)
+@app.route("/query/<uuid>", methods=["get"])
+def out_data(uuid):
+    cursor = conn.cursor(cursor=pymysql.cursors.DictCursor)
+    cursor.execute("select belong_key from admin_key where uuid='%s'" %uuid)
+    query_key = cursor.fetchone()
+    cursor.close()
+    if query_key:
+        local_belong_key = query_key["belong_key"]
+        cursor = conn.cursor(cursor=pymysql.cursors.DictCursor)
+        cursor.execute("select * from id_info where belong_key='%s'" %local_belong_key)
+        query_key = cursor.fetchone()
+    else:
+        return "无效key，拒绝访问"
 app.run(debug=True,host="0.0.0.0",port="6050")

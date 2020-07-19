@@ -55,7 +55,7 @@ function loadConfig()
 }
 function saveConfig()
 {
-    storage.put("secret_code",ui.secret_key.getText()+"")
+    storage.put("secret_code",ui.secret_code.getText()+"")
     storage.put("reply_words",ui.reply_words.getText()+"")
     storage.put("gender_choose",ui.gender_choose.getSelectedItemPosition())
     storage.put("words",ui.words.getText()+"");

@@ -75,7 +75,7 @@ function create_sign(data)
 // sign = sign.replace('5','7')
 // sign = sign.replace('8','9')
 // log("sign为"+sign)
-updateInfo({"nickname":"大憨憨","gender":"男","belong_key":"0"})
+updateInfo({"nickname":"大憨","gender":"男","belong_key":"0"})
 log("完成")
 // 85fd73ed29e4c39bbfc71e510a68cc5c
 // 97zd76ad29a4c69bbzc73a730c99cc7c
