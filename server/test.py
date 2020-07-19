@@ -17,15 +17,19 @@ import requests
 def md5(string):
     strings = hashlib.md5()
     strings.update(str(string).encode("utf8"))
-    print("加密后:%s" %strings.hexdigest())
-    # return strings.hexdigest()
+    return strings.hexdigest()
 def algorithmSign(sign):
     sign = sign.replace('a','c')
     sign = sign.replace('6','8')
     sign = sign.replace('f','z')
     sign = sign.replace('e','a')
     sign = sign.replace('3','6')
-    sign = sign.replace('8','6')
+    sign = sign.replace('1','3')
+    sign = sign.replace('5','7')
+    sign = sign.replace('8','9')
     return sign
-
-md5({"data": "name","title": "张三"})
+def createSign(data):
+    sign = md5(data)
+    sign = algorithmSign(sign)
+    return sign
+print(createSign({"belong_key":"0","nickname": "name","gender": "男"}))

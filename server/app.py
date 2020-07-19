@@ -24,17 +24,15 @@ def receiveInfo():
 #对sign进行检验
 def checkSign(data,sign):
     md5_data = md5(data)
-    local_sign = algorithmSign(md5_data)
+    local_sign = algorithmSign(md5_data)az406496b6bz40a0d0z4a7a66z096529
     if local_sign==sign:
         return 0
     else:
-        print("正确的sign为%s" %local_sign)
         return local_sign
 #对传入md5加密
 def md5(string):
     strings = hashlib.md5()
     strings.update(str(string).encode("utf8"))
-    print("加密后:%s" %strings.hexdigest())
     return strings.hexdigest()
 #sign的进一步算法
 def algorithmSign(sign):
@@ -43,8 +41,9 @@ def algorithmSign(sign):
     sign = sign.replace('f','z')
     sign = sign.replace('e','a')
     sign = sign.replace('3','6')
-    sign = sign.replace('c','a')
-    sign = sign.replace('8','6')
+    sign = sign.replace('1','3')
+    sign = sign.replace('5','7')
+    sign = sign.replace('8','9')
     return sign
 #向数据库插入接收到的信息
 def insertData(data):

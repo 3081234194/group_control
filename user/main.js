@@ -22,17 +22,15 @@ ui.layout(
         <text text="挂机自动回复中还会检查是否有访客,有访客会筛选并进行私聊"/>
         <input id="words" hint="你好|再见|不见" w="*" h="100sp"/>
         <text text="每句话用'|'隔开,不要回车,运行前一定要设置语库" color="red"/>
-        <text text="设置好后点击保存,语库保存在/sdcard/words.txt" color="red"/>
         <horizontal gravity="center">
-        <button id="save_words" text="#保存话术#"/>
         <button id="save_config" text="保存配置"/>
-        <button id="open_words" text="打开文件"/>
         </horizontal>
         <button layout_gravity="bottom" w="*" h="auto" text="开始运行" id="start"/>
         </vertical>
     </frame>
    </vertical>
 </vertical>)
+loadConfig()
 ui.autoService.on("check", function(checked) {
     // 用户勾选无障碍服务的选项时，跳转到页面让用户去开启
     if(checked && auto.service == null) {
@@ -44,6 +42,10 @@ ui.autoService.on("check", function(checked) {
         auto.service.disableSelf();
     }
 });
+ui.save_config.on("click",function(){
+    saveConfig()
+    toast("配置保存成功")
+})
 function loadConfig()
 {
     ui["secret_code"].setText(storage.get("secret_code",""))
@@ -67,6 +69,7 @@ ui.emitter.on("resume", function() {
 
 ui.start.on("click", function(){
     //程序开始运行之前判断无障碍服务
+    saveConfig()
     if(auto.service == null) {
         toast("请先开启无障碍服务！");
         return;
