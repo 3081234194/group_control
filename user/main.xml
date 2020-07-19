@@ -1,0 +1,27 @@
+<vertical>
+        <appbar>
+            <toolbar title="UI脚本使用无障碍服务的最佳实践"/>
+        </appbar>
+        <Switch id="autoService" text="无障碍服务" checked="{{auto.service != null}}" padding="8 8 8 8" textSize="15sp"/>
+        <frame height="200" gravity="center">
+            <input hint="卡密" layout_gravity="center" id="secret_code" w="*"/>
+            <horizontal>
+                    <text textSize="16sp" textColor="black" text="挂机自动回复:"/>
+                    <input id="reply_words" w="96sp" singleLine="true" hint="自动回复的话"/>
+            </horizontal>
+            <horizontal>
+                    <text textSize="16sp" textColor="black" text="选择私聊来访对象的性别"/>
+                    <spinner id="gender_choose" entries="男|女"/>
+            </horizontal>
+            <input id="words" hint="一句话术一行" w="*" h="100sp"/>
+            <text text="一句话术一行,运行前一定要设置语库" color="red"/>
+            <text text="设置好后点击保存,语库保存在/sdcard/words.txt" color="red"/>
+            <horizontal gravity="center">
+            <button id="save_words" text="#保存话术#"/>
+            <button id="save_config" text="保存配置"/>
+            <button id="open_words" text="打开文件"/>
+            <text text="挂机自动回复中还会检查是否有访客,有访客会筛选并进行私聊"/>
+            <button id="start" text="开始运行" layout="bottom"/>
+        </frame>
+        
+</vertical>
