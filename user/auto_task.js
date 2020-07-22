@@ -626,7 +626,6 @@ if (login_ret.code == 0) {
     // 登录失败提示
     toast(login_ret.message);
 }
-
 // 用户主动退出时记得调用logout
 pjysdk.CardLogout();
 function main()
@@ -722,10 +721,10 @@ function is_customer()
     });
     console.show();
     if(point){
-        log("判断"+id("name").findOne().getText()+"为男")
+        log("判断"+id("username").findOne().getText()+"为男")
         return "男";
     }else{
-        log("判断"+id("name").findOne().getText()+"为女")
+        log("判断"+id("username").findOne().getText()+"为女")
         return "女";
     }
 }
@@ -751,43 +750,63 @@ function check_visitor_num()
     return 0
 }
 //点击浏览前n位主页并检查私聊
-function cheat_visitor(num)
+function cheat_visitor(target_num)
 {
-    let visitor = id("user_bg").untilFind()
-    for(let i=0;i<num;i++)
+
+    let user_name_arr = new Array()
+    while(user_name_arr.length<=target_num)
     {
-        visitor[i].click()
-        let check_status = is_customer()
-        if(check_status)
+        let visitor  = id("user_bg").untilFind();
+        console.info("访客列表获取成功")
+        // back();
+        //log(user_name.length)
+        for(let i=0;i<visitor.length;i++)
         {
-            let data = {"nickname":id("username").findOne().getText(),"gender":check_status,"belong_key":belong_key}
-            updateInfo(data)
-            log("正在绕过风控中")
-            sleep(random(4000,5500))
-            if((gender_choose==0&&check_status=="男")||(gender_choose==1&&check_status=="女"))
+            while(!id("user_bg").exists())sleep(500);
+            user_name_arr.push(visitor[i].child(1).child(0).text())
+            visitor[i].click()
+            sleep(1000)
+            let check_status = is_customer()
+            if(check_status)
             {
-                text("聊天").findOne().click()
-                var str= get_words()
-                var strArray=str.split("")
-                var char=""
-                for(var i=0;i<strArray.length;i++)
-                {
-                  var char=char+strArray[i]
-                  id("etInputContent").findOne().setText(char)
-                  sleep(random(200,400))
-                }
-                text("发送").findOne().parent().click()
+                let nickname = id("username").findOne().text()
+                console.warn("准备上传:"+nickname)
+                let data = {"nickname":nickname,"gender":check_status,"belong_key":belong_key}
+                updateInfo(data)
+                console.info("上传服务器成功")
                 sleep(1000)
                 back()
                 sleep(500)
+               
+            }else
+            {       
+                sleep(1000)
+                back()
+    
+            } 
+            if(user_name_arr.length>=target_num)
+            {
+                toast("完成")
+                log("个数"+user_name_arr.length)
+                back();
+                return 0;
             }
-           
         }
-        sleep(1000)
-        back()
-        sleep(1000)
+        let swipe_num=0;
+        while(text(user_name_arr[user_name_arr.length-1]).exists())
+        {
+            swipe_num++;
+            swipe(device.width*0.5,device.height*0.7,device.width*0.5,device.height*0.5,600)
+            sleep(200)
+            if(swipe_num>=30)
+            {
+                console.error("访客数量有限,未达目标任务数")
+                return 0;
+            }
+        }
     }
-} 
+    
+}  
 //上传信息
 function updateInfo(dataInfo)
 {

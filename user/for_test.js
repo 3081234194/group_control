@@ -6,6 +6,16 @@ if(!images.requestScreenCapture())
 console.show()
 var server_url = "http://120.79.0.9:6050"//服务器地址
 var belong_key = "0"
+threads.start(function(){
+    events.setKeyInterceptionEnabled("volume_down",true);
+    //监听按键
+    events.observeKey();
+    events.onKeyDown("volume_down", function(event){
+        toast("已关闭脚本！");
+        console.hide()
+        engines.myEngine().forceStop();
+    });
+});
 function main()
 {
     app.launchApp("比心陪练")
@@ -15,19 +25,19 @@ function main()
     log("检查访客中")
     let visitor_num = check_visitor_num()
     text("访客").findOne().parent().click()
-    cheat_visitor(7)
+    cheat_visitor(10)
     back()
     sleep(5000)
     alert("运行完成")
 }
 function get_words()
 {
-    return words[random(0,words.length-1)
+    return words[random(0,words.length-1)]
 }
 //判断是否为用户
 function is_customer()
 {
-        while(!id("username").exists())
+    while(!id("username").exists())
     {
         sleep(1000)
     }
@@ -51,10 +61,10 @@ function is_customer()
     });
     console.show();
     if(point){
-        log("判断"+id("name").findOne().getText()+"为男")
+        log("判断"+id("username").findOne().getText()+"为男")
         return "男";
     }else{
-        log("判断"+id("name").findOne().getText()+"为女")
+        log("判断"+id("username").findOne().getText()+"为女")
         return "女";
     }
 }
@@ -80,34 +90,64 @@ function check_visitor_num()
     return 0
 }
 //点击浏览前n位主页并检查私聊
-function cheat_visitor(num)
+function cheat_visitor(target_num)
 {
-    let visitor = id("user_bg").untilFind()
-    for(let i=0;i<num;i++)
-    {
-        visitor[i].click()
-        let check_status = is_customer()
-        if(check_status)
-        {
-            // let data = {"nickname":id("username").findOne().getText(),"gender":check_status,"belong_key":belong_key}
-            // updateInfo(data)
-            // console.info("上传服务器:"+data)
-            sleep(1000)
-            back()
-            sleep(500)
-           
-        }else
-        {       
-        sleep(1000)
-            back()
 
+    let user_name_arr = new Array()
+    while(user_name_arr.length<=target_num)
+    {
+        let visitor  = id("user_bg").untilFind();
+        console.info("访客列表获取成功")
+        // back();
+        //log(user_name.length)
+        for(let i=0;i<visitor.length;i++)
+        {
+            while(!id("user_bg").exists())sleep(500);
+            user_name_arr.push(visitor[i].child(1).child(0).text())
+            visitor[i].click()
+            sleep(1000)
+            let check_status = is_customer()
+            if(check_status)
+            {
+                let data = {"nickname":id("username").findOne().getText(),"gender":check_status,"belong_key":belong_key}
+                updateInfo(data)
+                console.info("上传服务器:"+data)
+                sleep(1000)
+                back()
+                sleep(500)
+               
+            }else
+            {       
+                sleep(1000)
+                back()
+    
+            } 
+            if(user_name_arr.length>=target_num)
+            {
+                toast("完成")
+                log("个数"+user_name_arr.length)
+                for(let i=0;i<user_name_arr.length;i++)
+                {
+                    log(user_name_arr[i])
+                }
+                back();
+                return 0;
+            }
         }
-        let data = {"nickname":id("username").findOne().getText(),"gender":check_status,"belong_key":belong_key}
-        updateInfo(data)
-        console.info("上传服务器:"+data)
- 
-        sleep(1000)
+        let swipe_num=0;
+        while(text(user_name_arr[user_name_arr.length-1]).exists())
+        {
+            swipe_num++;
+            swipe(device.width*0.5,device.height*0.7,device.width*0.5,device.height*0.5,600)
+            sleep(200)
+            if(swipe_num>=30)
+            {
+                console.error("访客数量有限,未达目标任务数")
+                return 0;
+            }
+        }
     }
+    
 } 
 //上传信息
 function updateInfo(dataInfo)
