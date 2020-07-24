@@ -32,4 +32,4 @@ def createSign(data):
     sign = md5(data)
     sign = algorithmSign(sign)
     return sign
-print(createSign({"belong_key":"0","nickname": "name","gender": "男"}))
+print(createSign({"nickname": "憨憨","gender": "男","game":"王者荣耀","belong_key":"0"}))
