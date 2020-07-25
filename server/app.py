@@ -40,21 +40,7 @@ class id_info(db.Model):
     belong_key = db.Column(db.String(30))
 def create_db():
     #重置化数据库
-    db.drop_all()
     db.create_all()
-    id1 = room_id_info(nickname="张三0",gender="男",game="王者荣耀",insert_time=datetime.datetime.now(),use_times=0,belong_key="0")
-    id2 = room_id_info(nickname="张三1",gender="男",game="王者荣耀",insert_time=datetime.datetime.now(),use_times=0,belong_key="0")
-    id3= room_id_info(nickname="张三2",gender="男",game="王者荣耀",insert_time=datetime.datetime.now(),use_times=0,belong_key="0")
-    id4 = room_id_info(nickname="张三3",gender="男",game="王者荣耀",insert_time=datetime.datetime.now(),use_times=0,belong_key="0")
-    id5 = room_id_info(nickname="张三4",gender="男",game="王者荣耀",insert_time=datetime.datetime.now(),use_times=0,belong_key="0")
-    admin1 = room_admin_key(id=0,uuid="c69bb0cb-a30d-4fae-afad-fe838c10d6a2",belong_key="0")
-    db.session.add(admin1)
-    db.session.add(id1)
-    db.session.add(id2)
-    db.session.add(id3)
-    db.session.add(id4)
-    db.session.add(id5)
-    db.session.commit()
 #######################################
 @app.route("/uploadInfo", methods=["POST"])
 def receiveInfo():
@@ -118,14 +104,17 @@ def insertData(data):
 def room_insertData(data):
     try:
         ###############插入前先检查数据库是否存在################
-        query_nickname = db.session.query(room_id_info).filter(room_id_info.nickname==data["nickname"],room_id_info.belong_key==data["belong_key"]).first()
+        query_uuid = db.session.query(room_admin_key).filter(room_admin_key.uuid==data["uuid"]).first()
         ########################################################
-        if query_nickname:   
-            return "目标已存在"
-        else:
+        if query_uuid:   
+            query_nickname = db.session.query(room_id_info).filter(room_id_info.nickname==data["nickname"],room_id_info.belong_key==data["belong_key"]).first()
+            if query_nickname:
+                return "目标信息已存在"
             new_data = room_id_info(nickname=data["nickname"],gender=data["gender"],game=data["game"],use_times=0,belong_key=data["belong_key"],insert_time=datetime.datetime.now())
             db.session.add(new_data)
             db.session.commit()
+        else:
+            return "未授权工作室"
     except Exception as err:
         return err
     return 0
@@ -189,12 +178,12 @@ def room_admin_check(uuid):
 def room_query_data(belong_key,data):
     if(data["gender_filter"] and data["game_filter"]):
         print("性别及技能都进行了筛选")
-        query_data = db.session.query(room_id_info).filter(room_id_info.belong_key==belong_key,room_id_info.game.in_(data["game"]),room_id_info.gender==data["gender"]).order_by(-room_id_info.use_times,room_id_info.insert_time).first()
+        query_data = db.session.query(room_id_info).filter(room_id_info.belong_key==belong_key,room_id_info.game.in_(data["game_filter"]),room_id_info.gender==data["gender_filter"]).order_by(room_id_info.use_times.asc(),room_id_info.insert_time).first()
     elif(data["gender_filter"]): 
         print("性别进行了筛选")
-        query_data = db.session.query(room_id_info).filter(room_id_info.belong_key==belong_key,room_id_info.gender==data["gender"]).order_by(-room_id_info.use_times,room_id_info.insert_time).first()
+        query_data = db.session.query(room_id_info).filter(room_id_info.belong_key==belong_key,room_id_info.gender==data["gender_filter"]).order_by(room_id_info.use_times.asc(),room_id_info.insert_time).first()
     elif(data["game_filter"]):
-         query_data = db.session.query(room_id_info).filter(room_id_info.belong_key==belong_key,room_id_info.game.in_(data["game"])).order_by(-room_id_info.use_times,room_id_info.insert_time).first()
+         query_data = db.session.query(room_id_info).filter(room_id_info.belong_key==belong_key,room_id_info.game.in_(data["game_filter"])).order_by(room_id_info.use_times.asc(),room_id_info.insert_time).first()
     else:
         print("不筛选")
         query_data = db.session.query(room_id_info).filter(room_id_info.belong_key==belong_key).order_by(room_id_info.use_times.asc(),room_id_info.insert_time).first()
