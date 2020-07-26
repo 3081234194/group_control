@@ -104,7 +104,7 @@ def insertData(data):
 def room_insertData(data):
     try:
         ###############插入前先检查数据库是否存在################
-        query_uuid = db.session.query(room_admin_key).filter(room_admin_key.uuid==data["uuid"]).first()
+        query_uuid = db.session.query(room_admin_key).filter(room_admin_key.belong_key==data["belong_key"]).first()
         ########################################################
         if query_uuid:   
             query_nickname = db.session.query(room_id_info).filter(room_id_info.nickname==data["nickname"],room_id_info.belong_key==data["belong_key"]).first()
