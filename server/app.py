@@ -147,9 +147,9 @@ def room_query():
         if key:
             return room_query_data(key.belong_key,receive_json)
         else:
-            return "无效key,禁止访问"
+            return {"code":400,"msg":"无效key,禁止访问"}
     else:
-        return '<h1>只接受post请求！</h1>'
+        return {"code":500,"msg":"只接受post请求"}
 @app.route("/room/uploadInfo", methods=["POST"])
 def room_updateInfo():
     if request.method == 'POST':
@@ -165,6 +165,21 @@ def room_updateInfo():
             return {"code":400,"msg":"非法请求"}
     else:
         return '<h1>只接受post请求！</h1>'
+@app.route("/room/deleteAll", methods=["POST"])
+def room_deleteAll():
+    if request.method == 'POST':
+        receive_data = request.get_data()
+        receive_json = json.loads(receive_data)
+        uuid = receive_json["uuid"]
+        key = room_admin_check(uuid)
+        if key:
+            user = room_id_info.query.filter_by(belong_key=key.belong_key).delete(synchronize_session=False)
+            db.session.commit()
+            return {"code":0,"msg":"删除成功"}
+        else:
+            return {"code":400,"msg":"无效key,禁止访问"}
+    else:
+        return {"code":500,"msg":"只接受post请求"}
 #查找工作室uuid对应的key
 def room_admin_check(uuid):
     print("请求的uuid为%s" %uuid)
@@ -192,7 +207,6 @@ def room_query_data(belong_key,data):
         db.session.commit()
         return {"code":0,"msg":"SUCCESS","data":{"nickname":query_data.nickname,"gender":query_data.gender,"game":query_data.game,"use_times":query_data.use_times}}
     else:
-        return {"code":-100,"msg":"无符合要求的用户"}
-
+        return {"code":-100,"msg":"无符合要求的用户或数据已跑完"}
 create_db()
 app.run(debug=True,host="0.0.0.0",port="6050")
