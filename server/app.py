@@ -193,19 +193,19 @@ def room_admin_check(uuid):
 def room_query_data(belong_key,data):
     if(data["gender_filter"] and data["game_filter"]):
         print("性别及技能都进行了筛选")
-        query_data = db.session.query(room_id_info).filter(room_id_info.belong_key==belong_key,room_id_info.game.in_(data["game_filter"]),room_id_info.gender==data["gender_filter"]).order_by(room_id_info.use_times.asc(),room_id_info.insert_time).first()
+        query_data = db.session.query(room_id_info).filter(room_id_info.belong_key==belong_key,room_id_info.game.in_(data["game_filter"]),room_id_info.gender==data["gender_filter"]).order_by(room_id_info.insert_time).first()
     elif(data["gender_filter"]): 
         print("性别进行了筛选")
-        query_data = db.session.query(room_id_info).filter(room_id_info.belong_key==belong_key,room_id_info.gender==data["gender_filter"]).order_by(room_id_info.use_times.asc(),room_id_info.insert_time).first()
+        query_data = db.session.query(room_id_info).filter(room_id_info.belong_key==belong_key,room_id_info.gender==data["gender_filter"]).order_by(room_id_info.insert_time).first()
     elif(data["game_filter"]):
-         query_data = db.session.query(room_id_info).filter(room_id_info.belong_key==belong_key,room_id_info.game.in_(data["game_filter"])).order_by(room_id_info.use_times.asc(),room_id_info.insert_time).first()
+         query_data = db.session.query(room_id_info).filter(room_id_info.belong_key==belong_key,room_id_info.game.in_(data["game_filter"])).order_by(room_id_info.insert_time).first()
     else:
         print("不筛选")
-        query_data = db.session.query(room_id_info).filter(room_id_info.belong_key==belong_key).order_by(room_id_info.use_times.asc(),room_id_info.insert_time).first()
+        query_data = db.session.query(room_id_info).filter(room_id_info.belong_key==belong_key).order_by(room_id_info.insert_time).first()
     if(query_data):
-        query_data.use_times = query_data.use_times+1
+        db.session.delete(query_data)
         db.session.commit()
-        return {"code":0,"msg":"SUCCESS","data":{"nickname":query_data.nickname,"gender":query_data.gender,"game":query_data.game,"use_times":query_data.use_times}}
+        return {"code":0,"msg":"SUCCESS","data":{"nickname":query_data.nickname,"gender":query_data.gender,"game":query_data.game,"insert_time":query_data.insert_time}}
     else:
         return {"code":-100,"msg":"无符合要求的用户或数据已跑完"}
 create_db()
